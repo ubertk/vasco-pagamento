@@ -1,53 +1,64 @@
 package com.vascobank.pagamentotransferencia.pix.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.vascobank.pagamentotransferencia.pix.model.Pix;
+import com.vascobank.pagamentotransferencia.pix.model.PixKey;
+
 @RestController
 @RequestMapping("/pix")
 public class PixController {
-    private PixService pixService;
-    private ClienteService clienteService;
-
-    public PixController(PixService pixService, ClienteService clienteService) {
-        this.pixService = pixService;
-        this.clienteService = clienteService;
-    }
+     // @Autowired
+    // private PixService pixService;
+    // @Autowired
+   // private ClienteService clienteService;
     
-    public ResponseEntity<Pix> criarPix(@RequestBody PixRequestDTO pixRequest) {
-        Pix pix = pixService.criarPix(
-            pixRequest.getChave(),
-            pixRequest.getValor(),
-            pixRequest.getPagador(),
-            pixRequest.getBeneficiario()
-        );
+    public ResponseEntity<?> criarPix(@RequestBody Pix pixRequest) {
+        // Pix pix = pixService.criarPix(
+        //     pixRequest.getChave(),
+        //     pixRequest.getValor(),
+        //     pixRequest.getPagador(),
+        //     pixRequest.getBeneficiario()
+        // );
         
-        return ResponseEntity.status(HttpStatus.CREATED).body(pix);
+        return ResponseEntity.status(HttpStatus.CREATED).body(pixRequest);
     }
     
-    public ResponseEntity<Pix> obterPixPorId(@PathVariable Long id) {
-        Optional<Pix> optionalPix = pixService.obterPixPorId(id);
+    public ResponseEntity<?> obterPixPorId(@PathVariable Long id) {
+        // Optional<Pix> optionalPix = pixService.obterPixPorId(id);
         
-        if (optionalPix.isPresent()) {
-            Pix pix = optionalPix.get();
-            return ResponseEntity.ok(pix);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        // if (optionalPix.isPresent()) {
+        //     Pix pix = optionalPix.get();
+        //     return ResponseEntity.ok(pix);
+        // } else {
+        //     return ResponseEntity.notFound().build();
+        // }
+
+        return ResponseEntity.ok(id);
     }
     
-    public ResponseEntity<PixKey> criarPixKey(@RequestBody PixKeyCreationDTO pixKeyDTO) {
-        Cliente cliente = clienteService.obterClientePorId(pixKeyDTO.getClienteId());
+    public ResponseEntity<?> criarPixKey(@RequestBody PixKey pixKeyDTO) {
+     //   Cliente cliente = clienteService.obterClientePorId(pixKeyDTO.getClienteId());
 
-        if (cliente == null) {
-            return ResponseEntity.badRequest().build();
-        }
+        // if (cliente == null) {
+        //     return ResponseEntity.badRequest().build();
+        // }
 
-        PixKey pixKey = pixService.criarPixKey(pixKeyDTO.getChave(), cliente);
+        // PixKey pixKey = pixService.criarPixKey(pixKeyDTO.getChave(), cliente);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(pixKey);
+        return ResponseEntity.status(HttpStatus.CREATED).body(pixKeyDTO);
     }
 
-    public ResponseEntity<List<PixKey>> listarPixKeys() {
-        List<PixKey> pixKeys = pixService.listarPixKeys();
-        return ResponseEntity.ok(pixKeys);
+    public ResponseEntity<?> listarPixKeys() {
+        //List<PixKey> pixKeys = pixService.listarPixKeys();
+        return ResponseEntity.ok("[]");
     }
 
 }
