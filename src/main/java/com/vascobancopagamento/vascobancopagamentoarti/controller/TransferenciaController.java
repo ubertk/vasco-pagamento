@@ -5,13 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
-import com.vascobancopagamento.vascobancopagamentoarti.model.ComprovanteTransferenciaDTO;
-import com.vascobancopagamento.vascobancopagamentoarti.model.transferenciaDTO;
+import com.vascobancopagamento.vascobancopagamentoarti.model.DTO.ComprovanteTransferenciaDTO;
+import com.vascobancopagamento.vascobancopagamentoarti.model.DTO.transferenciaDTO;
 import com.vascobancopagamento.vascobancopagamentoarti.service.ExtratoContaService;
 import com.vascobancopagamento.vascobancopagamentoarti.shared.model.ContaDTO;
 import com.vascobancopagamento.vascobancopagamentoarti.shared.model.SaldoDTO;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Random;
 

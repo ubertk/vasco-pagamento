@@ -1,4 +1,4 @@
-package com.vascobancopagamento.vascobancopagamentoarti.model;
+package com.vascobancopagamento.vascobancopagamentoarti.model.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

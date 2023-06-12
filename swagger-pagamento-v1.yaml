@@ -31,37 +31,41 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Boleto'          
+                $ref: '#/components/schemas/ExtratoBoleto'          
             application/xml:
               schema:
-                $ref: '#/components/schemas/Boleto'
+                $ref: '#/components/schemas/ExtratoBoleto'
         '400':
           description: Invalid ID supplied
         '404':
           description: conta not found
       security:
         - api_key: []
-  /boleto/{idConta}:
+  /boleto/pagamento:
     post:
       tags:
         - pagamento
       summary: Pagamento de um boleto
       operationId: placeOrder
-      parameters:
-        - name: idConta
-          in: path
-          description: ID do usuario
-          required: true
-          schema:
-            type: integer
-            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtratoBoleto'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ExtratoBoleto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExtratoBoleto'
+        required: true
       responses:
         '200':
           description: retorna o boleto pago
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Boleto'
+                $ref: '#/components/schemas/ExtratoBoleto'
         '405':
           description: Invalid input
           
@@ -146,42 +150,6 @@ components:
       xml:
         name: ExtratoBoleto
         
-    Boleto:
-      type: object
-      properties:
-        id:
-          type: number
-          example: 24.69
-        numero:
-          type: number
-          example: 24.69
-        valorCobrado:
-          type: number
-          example: 24.69
-        valorTotal:
-          type: number
-          example: 24.69
-        juros:
-          type: number
-          example: 24.69
-        pago:
-          type: boolean
-          example: false
-        dataVencimento:
-          type: string
-        beneficiario:
-          type: string
-        cpfcnpj:
-          type: string
-        instrucoes:
-          type: string
-        codigoBarras:
-          type: string
-        datapagamento:
-          type: string
-      xml:
-        name: Boleto
-
     transferenciaDTO:
       type: object
       properties:

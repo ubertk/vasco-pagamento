@@ -40,12 +40,12 @@ public class BoletoController {
 
     }
 
-    @PostMapping("/{idConta}")
-    public ResponseEntity<?> pagarBoleto(@RequestBody Boleto boleto, @PathVariable Integer idConta) {
+    @PostMapping("/pagamento")
+    public ResponseEntity<?> pagarBoleto(@RequestBody ExtratoBoleto boleto) {
         try {
             SaldoDTO saldo = restTemplate.getForObject("http://localhost:8080/contaCorrente/saldo/{idConta}",
                     SaldoDTO.class,
-                    idConta);
+                    boleto.getIdConta());
 
             if (saldo.getValor() >= boleto.getValorTotal()) {
 
@@ -53,11 +53,11 @@ public class BoletoController {
                     boleto.setPago(true);
 
                     restTemplate.put("http://localhost:8080/contaCorrente/saldo",
-                            new SaldoDTO(idConta, saldo.getValor() - boleto.getValorTotal()), idConta);
+                            new SaldoDTO(boleto.getIdConta(), saldo.getValor() - boleto.getValorTotal()), boleto.getIdConta());
 
                     return ResponseEntity.status(HttpStatus.OK)
                             .body(extratoBoletoService
-                                    .extratoBoleto(new ExtratoBoleto(idConta, boleto.getId(), boleto.getNumero(),
+                                    .extratoBoleto(new ExtratoBoleto(boleto.getIdConta(), boleto.getId(), boleto.getNumero(),
                                             boleto.getValorCobrado(), boleto.getValorTotal(), boleto.getJuros(),
                                             boleto.isPago(),
                                             boleto.getDataVencimento(), boleto.getBeneficiario(), boleto.getCpfcnpj(),
