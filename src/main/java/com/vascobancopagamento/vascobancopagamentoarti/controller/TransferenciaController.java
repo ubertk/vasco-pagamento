@@ -25,7 +25,7 @@ public class TransferenciaController {
     @Autowired
     private RestTemplate restTemplate;
 
-    @PostMapping("/")
+    @PostMapping("/pix")
     public ResponseEntity<?> realizarTransferencia(@RequestBody transferenciaDTO transferencia) {
         try {
             ContaDTO conta = restTemplate.getForObject("http://localhost:8080/contaCorrente/pix/{chave}",

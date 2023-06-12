@@ -9,16 +9,16 @@ servers:
 tags:
   - name: pagamento
     description: todos os acessos para formas de pagamentos e transferencias
+    
 paths:
-  /pagamento/{userId}:
+  /boleto/{codigoBarras}:
     get:
       tags:
         - pagamento
-      summary: Retorna a conta do usuario
-      description: Returns um map da conta do usuario
+      summary: Busca por um boleto pelo codigo de barras
       operationId: getContaCorrentById
       parameters:
-        - name: userId
+        - name: codigoBarras
           in: path
           description: ID do usuario
           required: true
@@ -27,29 +27,28 @@ paths:
             format: int64
       responses:
         '200':
-          description: successful operation
+          description: retorna um boleto
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pagamento'          
+                $ref: '#/components/schemas/Boleto'          
             application/xml:
               schema:
-                $ref: '#/components/schemas/Pagamento'
+                $ref: '#/components/schemas/Boleto'
         '400':
           description: Invalid ID supplied
         '404':
           description: conta not found
       security:
         - api_key: []
-  /pagamento/{userId}/saldo:
-    get:
+  /boleto/{idConta}:
+    post:
       tags:
         - pagamento
-      summary: Place an order for a pet
-      description: Place a new order in the store
+      summary: Pagamento de um boleto
       operationId: placeOrder
       parameters:
-        - name: userId
+        - name: idConta
           in: path
           description: ID do usuario
           required: true
@@ -58,165 +57,41 @@ paths:
             format: int64
       responses:
         '200':
-          description: successful operation
+          description: retorna o boleto pago
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/saldo'
+                $ref: '#/components/schemas/Boleto'
         '405':
           description: Invalid input
           
-  /contaCorrente/saldo:
+  /transferencia/pix:
     post:
       tags:
-        - contaCorrente
-      summary: Place an order for a pet
-      description: Place a new order in the store
+        - pagamento
+      summary: Realiza uma transferencia baseada em uma chave pix
       operationId: saldo
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/saldo'
+              $ref: '#/components/schemas/transferenciaDTO'
           application/xml:
             schema:
-              $ref: '#/components/schemas/saldo'
+              $ref: '#/components/schemas/transferenciaDTO'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/saldo'
+              $ref: '#/components/schemas/transferenciaDTO'
         required: true
       responses:
         '200':
-          description: successful operation
+          description: Retorna um extrato da transferencia 
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/saldo'
+                $ref: '#/components/schemas/ExtratoConta'
         '405':
           description: Invalid input
-  /pagamento/pix:
-    post:
-      tags:
-        - pagamento
-      summary: Realizar Pix
-      description: Fazer um pagamento por pix
-      operationId: PagamentoPix
-      parameters:
-        - name: ChavePix
-          in: path
-          description: Chave pix do alvo
-          required: true
-          schema:
-            type: string
-        - name: ValorTransferencia
-          in: path
-          description: Valor a ser transferido
-          required: true
-          schema:
-            type: number
-            format: double
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/pix'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/pix'
-        '404':
-          description: Chave não encontrada
-  /pagamento/boleto:
-    post:
-      tags:
-        - pagamento
-      summary: Realiza um pagamento por boleto
-      description: Add a new pet to the store
-      operationId: PagarPorBoleto
-      requestBody:
-        description: Pega 2 contas uma emissora e outra alvo com o valor e data de vencimento e transfere
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/boleto'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/boleto'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/boleto'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/boleto'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/boleto'
-        '405':
-          description: Invalid input
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /pagamento/intrabanco:
-    post:
-      tags:
-        - pagamento
-      summary: Faz a Transferencia entre bancos
-      description: Faz a Transferencia entre bancos
-      operationId: TransferenciaEntreBancos
-      parameters:
-        - name: status
-          in: query
-          description: Faz a Transferencia entre 2 contas de bancos diferentes usando o ID das contas(emissora e alvo), o id do banco do alvo e uma taxa
-          required: true
-          explode: true
-          schema:
-            type: string
-            default: available
-            enum:
-              - available
-              - pending
-              - sold
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TransferenciaEntreBanco'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/TransferenciaEntreBanco'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/TransferenciaEntreBanco'
-        required: true
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TransferenciaEntreBanco'          
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TransferenciaEntreBanco'
-        '400':
-          description: Invalid status value
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-
-  
     
 components:
   schemas:
@@ -231,113 +106,114 @@ components:
             - PAGCARTAOCREDITO
             - INTRABANCO
             - 
-    pix:
-      type: object
-      properties:
-        ChavePixAlvo:
-          type: string
-          example: '12345679'
-        Valor:
-          type: number
-          example: '24.69'
-        Data:
-          type: string
-          example: '01/05/2023'         
-    xml:
-      name: Pix
     
-    boleto:
+    ExtratoBoleto:
       type: object
       properties:
-        Valor:
+        id:
           type: number
           example: 24.69
-        ContaAlvo:
+        idConta:
+          type: number
+          example: 24.69
+        numero:
+          type: number
+          example: 24.69
+        valorCobrado:
+          type: number
+          example: 24.69
+        valorTotal:
+          type: number
+          example: 24.69
+        juros:
+          type: number
+          example: 24.69
+        pago:
+          type: boolean
+          example: false
+        dataVencimento:
           type: string
-          example: '12345679'
-        ContaOrigem:
+        beneficiario:
           type: string
-          example: '987654321'
-        DataEmissao:
+        cpfcnpj:
           type: string
-          example: '01/05/2023'
-        DataVencimento:
+        instrucoes:
           type: string
-          example: '20/05/2023'
-        xml:
-          name: Boleto
-
-    saldo:
+        codigoBarras:
+          type: string
+        datapagamento:
+          type: string
+      xml:
+        name: ExtratoBoleto
+        
+    Boleto:
       type: object
       properties:
-        idConta: 
-          type: integer
-          example: 1
+        id:
+          type: number
+          example: 24.69
+        numero:
+          type: number
+          example: 24.69
+        valorCobrado:
+          type: number
+          example: 24.69
+        valorTotal:
+          type: number
+          example: 24.69
+        juros:
+          type: number
+          example: 24.69
+        pago:
+          type: boolean
+          example: false
+        dataVencimento:
+          type: string
+        beneficiario:
+          type: string
+        cpfcnpj:
+          type: string
+        instrucoes:
+          type: string
+        codigoBarras:
+          type: string
+        datapagamento:
+          type: string
+      xml:
+        name: Boleto
+
+    transferenciaDTO:
+      type: object
+      properties:
+        chavePix: 
+          type: string
         valor:
           type: number
           format: int64
           example: 99.99
       xml:
-        name: saldo
+        name: transferenciaDTO
         
-    extrato:
+    ExtratoConta:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
-        dataOperacao:
-          type: string
-          format: date
-        operacao:
-          type: string
-          enum:
-            - PIX
-            - BOLETO
-            - INTRABANCO
-            - PAGCARTAO
-      xml:
-        name: extrato
-        
-    PagarComCartaoCredito:
-      type: object
-      properties:
-        ValorPagamentoCartao:
-          type: number
-          example: 10.10
-        idCartao:
-          type: string
-          example: '292010'
         idConta:
-          type: string
-          example: '324353'
-        Juros:
           type: number
-          example: 5.23
+          format: int64
+          example: 1
+        dataHoraPagamento: 
+          type: string
+        idTransicao: 
+          type: string
+        recebeuNome: 
+          type: string
+        recebeuCpf: 
+          type: string
+        recebeuBanco: 
+          type: string
       xml:
-        name: PagarComCartaoCredito
-      
-    TransferenciaEntreBanco:
-      type: object
-      properties:
-        ValorTransferencia:
-          type: number
-          example: 10.10
-        ContaAlvo:
-          type: string
-          example: '292010'
-        ContaOrigem:
-          type: string
-          example: '324353'
-        idBanco:
-          type: string
-          example: '12345'
-        Taxa:
-          type: number
-          example: 2.23
-        xml:
-          name: TransferenciaEntreBanco
+        name: ExtratoConta
+   
 
    
   securitySchemes:

@@ -12,15 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.vascobancopagamento.vascobancopagamentoarti.model.Boleto;
-import com.vascobancopagamento.vascobancopagamentoarti.shared.model.ContaDTO;
+import com.vascobancopagamento.vascobancopagamentoarti.model.ExtratoBoleto;
+import com.vascobancopagamento.vascobancopagamentoarti.service.ExtratoBoletoService;
 import com.vascobancopagamento.vascobancopagamentoarti.shared.model.SaldoDTO;
 
 @RestController
 @RequestMapping(value = "/boleto")
 public class BoletoController {
 
-    // @Autowired
-    // private boletoService boletoService;
+    @Autowired
+    private ExtratoBoletoService extratoBoletoService;
     @Autowired
     private RestTemplate restTemplate;
 
@@ -42,19 +43,26 @@ public class BoletoController {
     @PostMapping("/{idConta}")
     public ResponseEntity<?> pagarBoleto(@RequestBody Boleto boleto, @PathVariable Integer idConta) {
         try {
-            SaldoDTO saldo = restTemplate.getForObject("http://localhost:8080/contaCorrente/saldo/{idConta}", SaldoDTO.class,
+            SaldoDTO saldo = restTemplate.getForObject("http://localhost:8080/contaCorrente/saldo/{idConta}",
+                    SaldoDTO.class,
                     idConta);
 
             if (saldo.getValor() >= boleto.getValorTotal()) {
 
-                if (!boleto.getPago()) {
+                if (!boleto.isPago()) {
                     boleto.setPago(true);
 
                     restTemplate.put("http://localhost:8080/contaCorrente/saldo",
-                            new SaldoDTO(idConta ,saldo.getValor() - boleto.getValorTotal()), idConta);
+                            new SaldoDTO(idConta, saldo.getValor() - boleto.getValorTotal()), idConta);
 
-                  //todo gerar extrato
-                    return ResponseEntity.status(HttpStatus.OK).body(boleto);
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .body(extratoBoletoService
+                                    .extratoBoleto(new ExtratoBoleto(idConta, boleto.getId(), boleto.getNumero(),
+                                            boleto.getValorCobrado(), boleto.getValorTotal(), boleto.getJuros(),
+                                            boleto.isPago(),
+                                            boleto.getDataVencimento(), boleto.getBeneficiario(), boleto.getCpfcnpj(),
+                                            boleto.getInstrucoes(),
+                                            boleto.getCodigoBarras(), boleto.getDatapagamento())));
                 } else {
                     return ResponseEntity.status(HttpStatus.ALREADY_REPORTED)
                             .body("{\"status\": \"208 \", message\": \"Boleto já pago\"}");
