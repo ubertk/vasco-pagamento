@@ -17,7 +17,7 @@ public class ExtratoController {
     @Autowired
     private ExtratoService extratoService;
 
-    @GetMapping("/{idConta}/{intervalo}")
+    @GetMapping("/{idConta}/")
     public ResponseEntity<?> extratoDia(@PathVariable Integer idConta, @PathVariable INTERVALO intervalo) {
         try {
             //verfificar se existe conta

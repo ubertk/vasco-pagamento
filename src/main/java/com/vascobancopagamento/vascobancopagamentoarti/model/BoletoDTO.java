@@ -1,4 +1,4 @@
-package com.vascobancopagamento.vascobancopagamentoarti.shared;
+package com.vascobancopagamento.vascobancopagamentoarti.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SaldoDTO {
-    double saldo;
+public class BoletoDTO {
+    Integer idConta;
+    double valor;
 }

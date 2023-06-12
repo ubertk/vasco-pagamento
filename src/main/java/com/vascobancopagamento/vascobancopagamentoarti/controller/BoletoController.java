@@ -12,9 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.vascobancopagamento.vascobancopagamentoarti.model.Boleto;
-import com.vascobancopagamento.vascobancopagamentoarti.shared.SaldoDTO;
 import com.vascobancopagamento.vascobancopagamentoarti.shared.model.ContaDTO;
-
+import com.vascobancopagamento.vascobancopagamentoarti.shared.model.SaldoDTO;
 
 @RestController
 @RequestMapping(value = "/boleto")
@@ -23,7 +22,7 @@ public class BoletoController {
     // @Autowired
     // private boletoService boletoService;
     @Autowired
-    private  RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
     @GetMapping("/{codigoBarras}")
     public ResponseEntity<?> retornarBoletoPorCodigoBarras(@PathVariable String codigoBarras) {
@@ -43,23 +42,27 @@ public class BoletoController {
     @PostMapping("/{idConta}")
     public ResponseEntity<?> pagarBoleto(@RequestBody Boleto boleto, @PathVariable Integer idConta) {
         try {
-            ContaDTO conta = restTemplate.getForObject("http://localhost:8080/contaCorrente/{idConta}", ContaDTO.class, idConta);
+            SaldoDTO saldo = restTemplate.getForObject("http://localhost:8080/contaCorrente/saldo/{idConta}", SaldoDTO.class,
+                    idConta);
 
-            if (conta.getSaldo() >= boleto.getValorTotal()) {
+            if (saldo.getValor() >= boleto.getValorTotal()) {
 
                 if (!boleto.getPago()) {
                     boleto.setPago(true);
-                  
-                    restTemplate.put("http://localhost:8080/contaCorrente/saldo/{idConta}",new SaldoDTO(conta.getSaldo()-boleto.getValorTotal()), idConta);
+
+                    restTemplate.put("http://localhost:8080/contaCorrente/saldo",
+                            new SaldoDTO(idConta ,saldo.getValor() - boleto.getValorTotal()), idConta);
+
+                  //todo gerar extrato
                     return ResponseEntity.status(HttpStatus.OK).body(boleto);
                 } else {
                     return ResponseEntity.status(HttpStatus.ALREADY_REPORTED)
                             .body("{\"status\": \"208 \", message\": \"Boleto já pago\"}");
                 }
 
-            }else{
+            } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("{\"status\": \"400 \", message\": \"Saldo insuficiente\"}");
+                        .body("{\"status\": \"400 \", message\": \"Saldo insuficiente\"}");
             }
         } catch (Exception e) {
             // enviar log

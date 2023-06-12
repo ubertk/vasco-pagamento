@@ -3,6 +3,7 @@ version: "3.1"
 services:
 
   db:
+    container_name: pagamento
     image: postgres:14.2-alpine
     restart: always
     environment:

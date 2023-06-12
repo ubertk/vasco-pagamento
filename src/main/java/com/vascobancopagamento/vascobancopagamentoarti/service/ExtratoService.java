@@ -13,14 +13,17 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vascobancopagamento.vascobancopagamentoarti.model.ComprovanteTransferenciaDTO;
 import com.vascobancopagamento.vascobancopagamentoarti.model.Extrato;
+import com.vascobancopagamento.vascobancopagamentoarti.model.ExtratoConta;
+import com.vascobancopagamento.vascobancopagamentoarti.model.transferenciaDTO;
 import com.vascobancopagamento.vascobancopagamentoarti.repository.ExtratoRepository;
 
 @Service
 public class ExtratoService {
     @Autowired
     private ExtratoRepository extratoRepository;
-
+    
     public List<Extrato> extratoDia(Integer idConta) {
         return List.of(new Extrato());
         // return extratoRepository.extratoDia(idConta,
