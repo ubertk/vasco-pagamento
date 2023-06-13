@@ -1,4 +1,4 @@
-package com.vascobancopagamento.vascobancopagamentoarti.transferencia.model;
+package com.vascobancopagamento.vascobancopagamentoarti._transferencia.model;
 
 import java.math.BigDecimal;
 

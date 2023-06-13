@@ -1,14 +1,14 @@
-package com.vascobancopagamento.vascobancopagamentoarti.transferencia.service;
-
-import com.vascobancopagamento.vascobancopagamentoarti.transferencia.model.Conta;
-import com.vascobancopagamento.vascobancopagamentoarti.transferencia.model.Transferencia;
-import com.vascobancopagamento.vascobancopagamentoarti.transferencia.repository.TransferenciaRepository;
+package com.vascobancopagamento.vascobancopagamentoarti._transferencia.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.vascobancopagamento.vascobancopagamentoarti._transferencia.model.Conta;
+import com.vascobancopagamento.vascobancopagamentoarti._transferencia.model.Transferencia;
+import com.vascobancopagamento.vascobancopagamentoarti._transferencia.repository.TransferenciaRepository;
 
 @Service
     public class TransferenciaService {

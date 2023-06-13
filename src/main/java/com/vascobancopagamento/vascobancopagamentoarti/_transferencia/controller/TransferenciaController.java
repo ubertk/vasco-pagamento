@@ -1,13 +1,15 @@
-package com.vascobancopagamento.vascobancopagamentoarti.transferencia.controller;
+package com.vascobancopagamento.vascobancopagamentoarti._transferencia.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.vascobancopagamento.vascobancopagamentoarti.transferencia.model.Transferencia;
-import com.vascobancopagamento.vascobancopagamentoarti.transferencia.model.TransferenciaRequest;
-import com.vascobancopagamento.vascobancopagamentoarti.transferencia.service.ContaNotFoundException;
-import com.vascobancopagamento.vascobancopagamentoarti.transferencia.service.SaldoInsuficienteException;
-import com.vascobancopagamento.vascobancopagamentoarti.transferencia.service.TransferenciaService;
+
+import com.vascobancopagamento.vascobancopagamentoarti._transferencia.model.Transferencia;
+import com.vascobancopagamento.vascobancopagamentoarti._transferencia.model.TransferenciaRequest;
+import com.vascobancopagamento.vascobancopagamentoarti._transferencia.service.ContaNotFoundException;
+import com.vascobancopagamento.vascobancopagamentoarti._transferencia.service.SaldoInsuficienteException;
+import com.vascobancopagamento.vascobancopagamentoarti._transferencia.service.TransferenciaService;
+
 import java.math.BigDecimal;
 
 @RestController
@@ -29,7 +31,7 @@ public class TransferenciaController {
 
            // Transferencia transferencia = transferenciaService.realizarTransferencia(idConta, userIdOrigem, userIdDestino, valor);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body("Transferência realizada com sucesso. ID da transferência: " + transferencia.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body("Transferência realizada com sucesso. ID da transferência: " );// transferencia.getId());
         } catch (ContaNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (SaldoInsuficienteException e) {
