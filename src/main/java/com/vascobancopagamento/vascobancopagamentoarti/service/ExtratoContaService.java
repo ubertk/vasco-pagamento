@@ -2,8 +2,9 @@ package com.vascobancopagamento.vascobancopagamentoarti.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.vascobancopagamento.vascobancopagamentoarti.model.ComprovanteTransferenciaDTO;
+
 import com.vascobancopagamento.vascobancopagamentoarti.model.ExtratoConta;
+import com.vascobancopagamento.vascobancopagamentoarti.model.DTO.ComprovanteTransferenciaDTO;
 import com.vascobancopagamento.vascobancopagamentoarti.repository.ExtratoContaRepository;
 
 @Service
