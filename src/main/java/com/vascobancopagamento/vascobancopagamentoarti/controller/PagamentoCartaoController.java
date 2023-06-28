@@ -13,19 +13,21 @@ import org.springframework.web.client.RestTemplate;
 
 import com.vascobancopagamento.vascobancopagamentoarti.model.Boleto;
 import com.vascobancopagamento.vascobancopagamentoarti.model.ExtratoBoleto;
+import com.vascobancopagamento.vascobancopagamentoarti.model.ExtratoCartao;
 import com.vascobancopagamento.vascobancopagamentoarti.service.ExtratoBoletoService;
+import com.vascobancopagamento.vascobancopagamentoarti.service.ExtratoCartaoService;
 import com.vascobancopagamento.vascobancopagamentoarti.shared.model.SaldoDTO;
 
 @RestController
 @RequestMapping(value = "/pagCartao")
 public class PagamentoCartaoController {
-    @AutoWired
-    private
-    @AutoWired
-    private RestTemplate restTemplate
+    @Autowired
+    private ExtratoCartaoService extratoCartaoService;
+    @Autowired
+    private RestTemplate restTemplate;
 
-    @GetMapping("/{id_cartao}")
-    public ResponseEntity<?> checarCartaoDeCredito(@Pathvariable string idCartaoCredito){
+    @GetMapping("/{idCartaoCredito}")
+    public ResponseEntity<?> checarCartaoDeCredito(@PathVariable String idCartaoCredito){
         try{
             CartaoCredito cartaoCredito = CartaoCredito.cartaoCreditoAleatorio();
             cartaoCredito.setIdCartaoCredito(idCartaoCredito);
@@ -42,9 +44,9 @@ public class PagamentoCartaoController {
             SaldoDTO saldo = restTemplate.getForObject("http://localhost:8080/contaCorrente/saldo/{idConta}",
                     SaldoDTO.class,
                     cartaoCredito.getIdConta());
-            if (cartaoCredito.getLimiteAux >= ExtratoCartao.valorTotal)
-            {
-                restTemplate.put("http://localhost:8080/contaCorrente/saldo"
+            if (cartaoCredito.getLimiteAux >= ExtratoCartao.valorTotal){
+                restTemplate.put("http://localhost:8080/contaCorrente/saldo", cartaoCredito, null);
+         
             }
             else
             {
