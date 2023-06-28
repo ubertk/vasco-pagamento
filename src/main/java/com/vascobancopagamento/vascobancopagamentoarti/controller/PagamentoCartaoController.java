@@ -47,27 +47,32 @@ public class PagamentoCartaoController {
         }
     }
 
-    @PostMapping("/pagamento")
-    public ResponseEntity<?> pagarCartaoDeCredito(@RequestBody CartaoCredito cartaoCredito) {
+    @PostMapping("/pagamento/{idFatura}")
+    public ResponseEntity<?> pagarCartaoDeCredito(@PathVariable Integer idFatura,
+            @RequestBody CartaoCredito cartaoCredito) {
         try {
             ContaDTO conta = restTemplate.getForObject("http://localhost:8080/contaCorrente/{idConta}",
                     ContaDTO.class,
                     cartaoCredito.getIdConta());
 
-                    List<Fatura> faturas;
-                    ResponseEntity<List<Fatura>> response = restTemplate.exchange("http://localhost:8080/fatura/{idCartao}",
-                    HttpMethod.GET,
-                    null,
-                    new  ParameterizedTypeReference<List<Fatura>>(){},  cartaoCredito.getId());
+            Fatura fatura = restTemplate.getForObject("http://localhost:8081/fatura/{idFatura}",
+                    Fatura.class,
+                    idFatura);
+            if (conta == null || fatura == null)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("{\"status\": \"400 \", message\": \"Error ao encontrar faturas e contas\"}");
 
-                    if(response != null && response.hasBody()){
-                        faturas = response.getBody();
-                    }
-                
+            if (conta.getSaldo() >= fatura.getValorTotal()) {
+                fatura.setPaga(true);
+                conta.setSaldo(conta.getSaldo() - fatura.getValorTotal());
+                restTemplate.put("http://localhost:8080/contaCorrente/{idConta}", conta, conta.getId());
+                restTemplate.put("http://localhost:8081/fatura/{idCartao}", fatura, fatura.getIdCartao());
+                ExtratoCartao extratoCartao = new ExtratoCartao(fatura.getValorTotal(), conta.getNome(),
+                        conta.getAgencia(), conta.getNumeroComDigito());
 
-            if (_cartaoCredito.get() >= ExtratoCartao.valorTotal) {
-                restTemplate.put("http://localhost:8080/contaCorrente/saldo", cartaoCredito, null);
-
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(extratoCartaoService.salvarExtrato(extratoCartao));
+                // enviar log
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("{\"status\": \"400 \", message\": \"Limite insuficiente\"}");
